@@ -1,70 +1,64 @@
-// Load application styles
 import 'styles/index.less';
 
-// ================================
-// START YOUR APP HERE
-// ================================
+import headerTemplate from 'header.ejs';
+import searchboxTemplate from 'searchbox.ejs';
+import contentTemplate from 'content.ejs';
 
-// Importing component templates
-import appTemplate from 'app.ejs';
-import babyTemplate from 'baby.ejs';
-import grandBabyTemplate from 'grandBaby.ejs';
-
-// Import Gorilla Module
 import Gorilla from '../Gorilla';
 
-// Creating Gorilla Component Instance with some data
-const grandBaby = new Gorilla.Component(grandBabyTemplate, {
-  content: 'What!!!'
-});
 
-// Creating Component Instance Method (Frequently used as event handler in template)
-grandBaby.hello = function () {
-  console.log('hello');
-};
+const searchbox = new Gorilla.Component(searchboxTemplate);
 
-// Creating Gorilla Component Instance with some data and child component
-const baby = new Gorilla.Component(babyTemplate, {
-  name: 'Baby..'
+searchbox.search = function(e) {
+	if (e.keyCode === 13) {
+		console.log(e.target.value);
+		const keyword = e.target.value;
+		e.target.value = '';
+		keyword ? request(keyword) : console.error('1글자 이상 입력하세요');
+	}
+}
+
+
+function request(keyword) {
+	$.ajax(`http://localhost:3000/v1/search/book/?query=${keyword}&display=20&start=1&sort=sim`, {
+		success: function(data) {
+			console.log(data);
+			showResult(data);
+		}
+	});
+}
+
+function showResult(data) {
+	console.log('showResult: '+data);
+
+	for (let i = 0; i < data.display; i++) {
+		const content = new Gorilla.Component(contentTemplate, {
+			image : data.items[i].image,
+			title : data.items[i].title,
+			author : data.items[i].author,
+			publisher : data.items[i].publisher,
+			price : data.items[i].price
+		});
+	
+		Gorilla.renderToDOM(
+			content,
+			document.querySelector('#root')
+		);
+	}
+}
+
+const header = new Gorilla.Component(headerTemplate, {
+	title: 'Vanilla Bookstore'
 }, {
-  grandBaby
+	searchbox
 });
 
-baby.whatAreYou = function () {
-  console.log('what are you?');
-};
 
-const app = new Gorilla.Component(appTemplate, {
-  title: '바닐라코딩'
-}, {
-  baby
-});
-
-app.handleMouseover = function () {
-  console.log('mouseover');
-};
-
-app.handleClick = function () {
-  console.log('click');
-};
-
-// Listening to component life cycle
-app.on('BEFORE_RENDER', () => console.log('app before render'));
-app.on('AFTER_RENDER', () => console.log('app after render'));
-
-// Updating component data model
-setTimeout(() => {
-  app.title = '빠닐라코띵';
-  baby.name = 'Qkqkqkqk';
-  grandBaby.content = 'GGGGG';
-}, 2000);
-
-// Initializing the app into DOM
 Gorilla.renderToDOM(
-  app,
-  document.querySelector('#root')
+    header,
+    document.querySelector('#root')
 );
 
 /* DO NOT REMOVE */
-module.hot.accept();
+// module.hot.accept();
 /* DO NOT REMOVE */
