@@ -1,0 +1,214 @@
+// Apply a natural box layout model to all elements
+// but allowing components to change
+// http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+html, body {
+    box-sizing: border-box;
+    margin: 0;
+    font-family: 'Noto Serif KR', serif;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 50vh;
+}
+
+.black {
+    background-color: #000;
+    // background-image: url('https://www.editage.jp/insights/sites/default/files/How%20to%20make%20your%20paper%20more%20accessible%20through%20self-archiving_0.jpg');
+    // background-size: cover;
+}
+
+.title {
+    text-align: center;
+    font-size: 50px;
+    color: #fff;
+    font-family: 'Lobster', cursive;
+    margin-bottom: 20px;
+}
+
+.inputWrapper {
+    width: 550px;
+    background-color: #fff;
+    border-radius: 40px;
+    padding: 10px;
+}
+
+.inputBox {
+    width: 500px;
+    font-size: 30px;
+    text-align: center;
+    outline: none;
+    border: 0;
+    font-family: 'Noto Serif KR', serif;
+
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // background-color: lightyellow;
+    // background-image: url('http://7-themes.com/data_images/out/26/6857918-paper-background.jpg');
+}
+
+.contentWrapper {
+    width: 60vw;
+    display: flex;
+    flex-direction: column;
+
+    // background-color: lightgreen;
+}
+
+// http://7-themes.com/data_images/out/26/6857918-paper-background.jpg
+// http://creativity103.com/collections/Paper/rough_paper.jpg
+// http://images7.design-editor.com/92/9223288/3958%2F2243DDA6-4513-3B74-D969-0B6815AB669F.jpg
+
+.setting {
+    align-self: flex-end;
+    padding: 20px 0;
+
+    span {
+        font-size: 13px;
+    }
+
+    span:nth-child(1) {
+        cursor: pointer;
+    }
+    span:nth-child(3) {
+        cursor: pointer;
+    }
+    span:nth-child(5) {
+        cursor: pointer;
+    }
+}
+
+.fas, .far {
+    font-size: 17px;
+    color: #444;
+    display: inline;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.selected {
+    color: #db5959;
+}
+
+.resultWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;    
+
+    // background-color: powderblue;
+}
+
+// .resultWrapper_card {
+//     display: flex;
+    // align-items: center;    
+    // flex-wrap: wrap;
+    // flex-direction: column;
+
+    // div {
+        // display: flex;
+        // flex-direction: column;
+        // align-items: center;
+        // flex-basis: 250px;
+    //     width: 25%;
+    // }
+    
+    // div:nth-child(4n+1) {
+    //     order: 1;
+    // }
+
+    // div:nth-child(4n+2) {
+    //     order: 2;
+    // }
+
+    // div:nth-child(4n+3) {
+    //     order: 3;
+    // }
+
+    // div:nth-child(4n) {
+    //     order: 4;
+    // }
+
+// }
+
+.result {
+    display: flex;
+    align-items: center;
+    width: 85%;
+    // border: 1px solid #888;
+    // margin-bottom: 18px;
+    padding: 20px 25px;
+    // background-color: rgba(136, 136, 136, 0.3);
+    // border-radius: 25px;
+    border-bottom: 1px solid #888;
+
+}
+
+// .result_card {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     // flex-basis: 250px;
+//     width: 25px;
+    
+// }
+
+// .result_card img {
+//     width: 180px;
+// }
+
+.result img {
+    width: 100px;
+    margin-right: 20px;
+    flex-shrink: 0;
+    // overflow: hidden;
+    // border: 5px solid red;
+}
+
+.result ul {
+    // border: 1px solid blue;
+    list-style: none;
+    padding-left: 0;
+
+    li:nth-child(1) {
+        font-family: 'Gothic A1', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    li:nth-child(2) {
+        font-weight: 700;
+    }
+}
+
+.result li {
+    margin-bottom: 2px;
+    font-size: 13px;
+}
+
+
+.loadMore {
+    padding: 30px 0;
+    div {
+        text-align: center;
+    } 
+}
+
+.invisible {
+    display: none;
+}
