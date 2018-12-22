@@ -3,7 +3,7 @@ import 'styles/index.scss';
 import appTemplate from 'app.ejs';
 import searchboxTemplate from 'searchbox.ejs';
 import settingTemplate from 'setting.ejs';
-import resultTemplate from 'result.ejs';
+import resultsTemplate from 'results.ejs';
 import loadMoreTemplate from 'loadMore.ejs';
 
 import Gorilla from '../Gorilla';
@@ -13,6 +13,10 @@ let count;
 let viewCount;
 let bookInfo;
 let bookdata;
+
+let resultsWrapper;
+
+let type = 'list';
 
 const searchbox = new Gorilla.Component(searchboxTemplate);
 
@@ -25,10 +29,6 @@ searchbox.search = function(e) {
 		bookInfo = [];
 		bookdata = {};
 		keyword ? requestInfo(keyword) : console.error('1글자 이상 입력하세요');
-
-		// const content = document.querySelector('.content');
-		// content.style.backgroundColor = 'pink';
-		
 	}
 }
 
@@ -39,7 +39,7 @@ function requestInfo(keyword, start = 1, display = 20, sort = 'sim') {
 
 		success: function(data) {
 			count = 0;
-
+			console.log(data);
 			bookdata = data;
 			// debugger
 			// bookInfo.push(data.items);
@@ -76,23 +76,65 @@ function requestURL(bookInfo, index, link) {
 }
 
 function showResult(bookInfo) {
-	result.bookInfo = bookInfo;
+	results.bookInfo = bookInfo;
 	loadMore.bookInfo = bookInfo;
 	loadMore.bookdata = bookdata;
+	
 	viewCount++;
 	console.log('viewCount', viewCount);
 	// const loadMore = document.querySelector('.loadMore');
 	// loadMore.classList.remove('invisible');
+
+	resultsWrapper = document.querySelector('.resultsWrapper');
 }
 
 const setting = new Gorilla.Component(settingTemplate);
 
-setting.showCardType = (e) => {
-	console.log(e.target.className);
+setting.showListType = (e) => {
+	type = 'list';
 	e.target.classList.add('selected');
+	e.target.parentElement.children[6].classList.remove('selected');
+	setListType();
 }
 
-const result = new Gorilla.Component(resultTemplate, {
+setting.showCardType = (e) => {
+	type = 'card';
+	e.target.classList.add('selected');
+	e.target.parentElement.children[5].classList.remove('selected');
+	setCardType();
+}
+
+function setListType() {
+	resultsWrapper.classList.toggle('resultsWrapper-card');
+	resultsWrapper.classList.toggle('resultsWrapper-list');
+	for (let i = 0; i < resultsWrapper.children.length; i++) {
+		resultsWrapper.children[i].classList.toggle('result-card');
+		resultsWrapper.children[i].classList.toggle('result-list');
+		resultsWrapper.children[i].children[0].classList.toggle('result-innerWrapper-card');
+		resultsWrapper.children[i].children[0].classList.toggle('result-innerWrapper-list');
+		resultsWrapper.children[i].children[0].children[1].classList.toggle('info-card');
+		resultsWrapper.children[i].children[0].children[1].children[0].children[3].classList.toggle('invisible');
+		resultsWrapper.children[i].children[0].children[1].children[0].children[4].classList.toggle('invisible');
+		resultsWrapper.children[i].children[0].children[1].children[0].children[5].classList.toggle('invisible');
+	}
+}
+
+function setCardType() {
+	resultsWrapper.classList.remove('resultsWrapper-list');
+	resultsWrapper.classList.add('resultsWrapper-card');
+	for (let i = 0; i < resultsWrapper.children.length; i++) {
+		resultsWrapper.children[i].classList.remove('result-list');
+		resultsWrapper.children[i].classList.add('result-card');
+		resultsWrapper.children[i].children[0].classList.remove('result-innerWrapper-list');
+		resultsWrapper.children[i].children[0].classList.add('result-innerWrapper-card');
+		resultsWrapper.children[i].children[0].children[1].classList.add('info-card');
+		resultsWrapper.children[i].children[0].children[1].children[0].children[3].classList.add('invisible');
+		resultsWrapper.children[i].children[0].children[1].children[0].children[4].classList.add('invisible');
+		resultsWrapper.children[i].children[0].children[1].children[0].children[5].classList.add('invisible');
+	}
+}
+
+const results = new Gorilla.Component(resultsTemplate, {
 	bookInfo: []
 });
 
@@ -114,7 +156,7 @@ const app = new Gorilla.Component(appTemplate, {
 }, {
 	searchbox,
 	setting,
-	result,
+	results,
 	loadMore
 });
 
