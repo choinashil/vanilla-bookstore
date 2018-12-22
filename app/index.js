@@ -10,13 +10,21 @@ import Gorilla from '../Gorilla';
 
 let keyword;
 let count;
-let viewCount;
+let requestCount;
 let bookInfo;
 let bookdata;
 
+let header;
+let content;
+let sortby;
 let resultsWrapper;
+let result;
+let naverLink;
+let loadmore;
 
 let type = 'list';
+let sortbySim = true;
+let isRequesting = false;
 
 const searchbox = new Gorilla.Component(searchboxTemplate);
 
@@ -25,7 +33,7 @@ searchbox.search = function(e) {
 		console.log(e.target.value);
 		keyword = e.target.value;
 		e.target.value = '';
-		viewCount = 0;
+		requestCount = 0;
 		bookInfo = [];
 		bookdata = {};
 		keyword ? requestInfo(keyword) : console.error('1글자 이상 입력하세요');
@@ -33,28 +41,40 @@ searchbox.search = function(e) {
 }
 
 
-function requestInfo(keyword, start = 1, display = 20, sort = 'sim') {
-	$.ajax({
-		url: `http://localhost:3000/v1/search/book/?query=${keyword}&display=${display}&start=${start}&sort=${sort}`,
-
-		success: function(data) {
-			count = 0;
-			console.log(data);
-			bookdata = data;
-			// debugger
-			// bookInfo.push(data.items);
-			// bookInfo = Object.assign(data.items);
-			bookInfo = bookInfo.concat(data.items);
-			// console.log('bookInfo'+ bookInfo[0]);
-			for (let i = 0; i < bookInfo.length; i++) {
-				if (!bookInfo[i].image) {
-					bookInfo[i].image = 'https://bookthumb-phinf.pstatic.net/cover/106/518/10651821.jpg?udate=20160603';
+function requestInfo(keyword, start = 1, sort = 'sim', display = 20) {
+	if (!isRequesting) {
+		isRequesting = true;
+		$.ajax({
+			url: `http://localhost:3000/v1/search/book/?query=${keyword}&display=${display}&start=${start}&sort=${sort}`,
+	
+			success: function(data) {
+				count = 0;
+				
+				bookdata = data;
+				// debugger
+				// bookInfo.push(data.items);
+				// bookInfo = Object.assign(data.items);
+				bookInfo = bookInfo.concat(data.items);
+				console.log(bookdata);
+				console.log(bookInfo.length);
+	
+				if (sortbySim) {
+					if (bookInfo.length) {
+						for (let i = 0; i < bookInfo.length; i++) {
+							if (!bookInfo[i].image) {
+								bookInfo[i].image = 'https://bookthumb-phinf.pstatic.net/cover/106/518/10651821.jpg?udate=20160603';
+							}
+							requestURL(bookInfo, i, bookInfo[i].link);
+						}	
+					} else {
+						showResult(bookInfo);
+					}
+				} else {
+					showResult(bookInfo);
 				}
-				// console.log(bookInfo[i].link);
-				requestURL(bookInfo, i, bookInfo[i].link);
 			}
-		}
-	});
+		});	
+	}
 }
 
 function requestURL(bookInfo, index, link) {
@@ -76,16 +96,46 @@ function requestURL(bookInfo, index, link) {
 }
 
 function showResult(bookInfo) {
+	isRequesting = false;
+	results.keyword = keyword;
 	results.bookInfo = bookInfo;
+	results.bookdata = bookdata;
 	loadMore.bookInfo = bookInfo;
 	loadMore.bookdata = bookdata;
-	
-	viewCount++;
-	console.log('viewCount', viewCount);
-	// const loadMore = document.querySelector('.loadMore');
-	// loadMore.classList.remove('invisible');
 
+	requestCount++;
+	console.log('requestCount', requestCount);
+	
+	header = document.querySelector('.header');
+	content = document.querySelector('.content');
+	sortby = document.querySelector('.setting');
 	resultsWrapper = document.querySelector('.resultsWrapper');
+	result = document.querySelectorAll('.result');
+	naverLink = document.querySelector('.naverLink');
+	loadmore = document.querySelector('.loadMore');
+	
+	content.classList.remove('invisible');
+	header.classList.remove('header-big');
+	header.classList.add('header-small');
+	header.children[0].classList.remove('invisible');
+	header.children[1].classList.add('invisible');
+	loadmore.classList.remove('invisible');
+	sortby.classList.remove('invisible');
+	resultsWrapper.children[0].classList.remove('mt');
+
+	if (!bookInfo.length) {
+		console.log('검색결과가 없습니다');
+		loadmore.classList.add('invisible');
+		sortby.classList.add('invisible');
+		resultsWrapper.children[0].classList.add('mt');
+	} else {
+		if (type === 'list') {
+			setListType();
+		} else {
+			setCardType();
+		}
+	}
+	
 }
 
 const setting = new Gorilla.Component(settingTemplate);
@@ -104,18 +154,52 @@ setting.showCardType = (e) => {
 	setCardType();
 }
 
+setting.sortBySim = (e) => {
+	sortbySim = true;
+	requestCount = 0;
+	bookInfo = [];
+	bookdata = {};
+	e.target.classList.add('selected');
+	e.target.parentElement.children[2].classList.remove('selected');
+	e.target.parentElement.children[4].classList.remove('selected');
+	requestInfo(keyword, 1, 'sim');
+}
+
+setting.sortByPubDate = (e) => {
+	sortbySim = false;
+	requestCount = 0;
+	bookInfo = [];
+	bookdata = {};
+	e.target.classList.add('selected');
+	e.target.parentElement.children[0].classList.remove('selected');
+	e.target.parentElement.children[4].classList.remove('selected');
+	requestInfo(keyword, 1, 'date');
+}
+
+setting.sortBySales = (e) => {
+	sortbySim = false;
+	requestCount = 0;
+	bookInfo = [];
+	bookdata = {};
+
+	e.target.classList.add('selected');
+	e.target.parentElement.children[0].classList.remove('selected');
+	e.target.parentElement.children[2].classList.remove('selected');
+	requestInfo(keyword, 1, 'count');
+}
+
 function setListType() {
-	resultsWrapper.classList.toggle('resultsWrapper-card');
-	resultsWrapper.classList.toggle('resultsWrapper-list');
+	resultsWrapper.classList.remove('resultsWrapper-card');
+	resultsWrapper.classList.add('resultsWrapper-list');
 	for (let i = 0; i < resultsWrapper.children.length; i++) {
-		resultsWrapper.children[i].classList.toggle('result-card');
-		resultsWrapper.children[i].classList.toggle('result-list');
-		resultsWrapper.children[i].children[0].classList.toggle('result-innerWrapper-card');
-		resultsWrapper.children[i].children[0].classList.toggle('result-innerWrapper-list');
-		resultsWrapper.children[i].children[0].children[1].classList.toggle('info-card');
-		resultsWrapper.children[i].children[0].children[1].children[0].children[3].classList.toggle('invisible');
-		resultsWrapper.children[i].children[0].children[1].children[0].children[4].classList.toggle('invisible');
-		resultsWrapper.children[i].children[0].children[1].children[0].children[5].classList.toggle('invisible');
+		result[i].classList.remove('result-card');
+		result[i].classList.add('result-list');
+		result[i].children[0].classList.remove('result-innerWrapper-card');
+		result[i].children[0].classList.add('result-innerWrapper-list');
+		result[i].children[0].children[1].classList.remove('info-card');
+		result[i].children[0].children[1].children[0].children[3].classList.remove('invisible');
+		result[i].children[0].children[1].children[0].children[4].classList.remove('invisible');
+		result[i].children[0].children[1].children[0].children[5].classList.remove('invisible');
 	}
 }
 
@@ -123,20 +207,29 @@ function setCardType() {
 	resultsWrapper.classList.remove('resultsWrapper-list');
 	resultsWrapper.classList.add('resultsWrapper-card');
 	for (let i = 0; i < resultsWrapper.children.length; i++) {
-		resultsWrapper.children[i].classList.remove('result-list');
-		resultsWrapper.children[i].classList.add('result-card');
-		resultsWrapper.children[i].children[0].classList.remove('result-innerWrapper-list');
-		resultsWrapper.children[i].children[0].classList.add('result-innerWrapper-card');
-		resultsWrapper.children[i].children[0].children[1].classList.add('info-card');
-		resultsWrapper.children[i].children[0].children[1].children[0].children[3].classList.add('invisible');
-		resultsWrapper.children[i].children[0].children[1].children[0].children[4].classList.add('invisible');
-		resultsWrapper.children[i].children[0].children[1].children[0].children[5].classList.add('invisible');
+		debugger
+		result[i].classList.remove('result-list');
+		result[i].classList.add('result-card');
+		result[i].children[0].classList.remove('result-innerWrapper-list');
+		result[i].children[0].classList.add('result-innerWrapper-card');
+		result[i].children[0].children[1].classList.add('info-card');
+		result[i].children[0].children[1].children[0].children[3].classList.add('invisible');
+		result[i].children[0].children[1].children[0].children[4].classList.add('invisible');
+		result[i].children[0].children[1].children[0].children[5].classList.add('invisible');
 	}
 }
 
 const results = new Gorilla.Component(resultsTemplate, {
-	bookInfo: []
+	keyword: '',
+	bookInfo: [],
+	bookdata: []
 });
+
+results.MoveToNaverBook = function(e) {
+	if (type !== 'list') {
+		window.open(naverLink.href, '_blank');
+	}
+}
 
 const loadMore = new Gorilla.Component(loadMoreTemplate, {
 	bookInfo: [],
@@ -145,20 +238,31 @@ const loadMore = new Gorilla.Component(loadMoreTemplate, {
 
 loadMore.loadMoreInfo = function() {
 	console.log('load more..')
-	if (viewCount * 20 - bookdata.total < 20) {
-		requestInfo(keyword, (viewCount * 20) + 1);
+	if (requestCount * 20 - bookdata.total < 20) {
+		requestInfo(keyword, (requestCount * 20) + 1);
+	} else {
+
 	}
 }
 
 
-const app = new Gorilla.Component(appTemplate, {
-    title: 'Vanilla Bookstore'
-}, {
+const app = new Gorilla.Component(appTemplate, null, {
 	searchbox,
 	setting,
 	results,
 	loadMore
 });
+
+app.resetAll = function() {
+	setTimeout(function() {
+		header.classList.remove('header-small');
+	header.classList.add('header-big');
+	header.children[0].classList.add('invisible');
+	header.children[1].classList.remove('invisible');
+	content.classList.add('invisible');
+	}, 500);
+	
+}
 
 Gorilla.renderToDOM(
     app,

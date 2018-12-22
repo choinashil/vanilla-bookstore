@@ -17,34 +17,79 @@ a {
 
 .header {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    // align-content: center;
     width: 100%;
-    height: 50vh;
+    // z-index: 0;
+    transition: height 0.35s ease-in-out;
+    transition-timing-function: ease-in-out;
 }
+
+.header-big {
+    flex-direction: column;
+    height: 100vh;
+}
+
+.header-small {
+    // position: relative;
+    // background-color: powderblue;
+    // border: 3px solid yellow;
+    height: 20vh;
+    // align-self: auto;
+}
+
+$pic1: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80';
+
+$pic2: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80';
+
+$pic3: 'https://images.unsplash.com/photo-1466583985723-b74122659346?ixlib=rb-1.2.1&auto=format&fit=crop&w=2389&q=80';
 
 .black {
-    background-color: #000;
-    // background-image: url('https://www.editage.jp/insights/sites/default/files/How%20to%20make%20your%20paper%20more%20accessible%20through%20self-archiving_0.jpg');
-    // background-size: cover;
+    // background-color: #000;
+    background: url($pic1) center center fixed;
+    background-size: cover;
 }
+
+
 
 .title {
-    text-align: center;
-    margin-bottom: 20px;
+    // border: 1px solid red;
     color: #fff;
-    font: {
-        family: 'Lobster', cursive;
-        size: 50px;
-    };
+    font-family: 'Lobster', cursive;
+    &-big {
+        margin-bottom: 20px;
+        font-size: 60px;
+    }
+    &-small {
+        font-size: 30px;
+        line-height: 25px;
+        text-align: center;
+        margin-bottom: 20px;
+        margin-right: 20px;
+        padding-top: 15px;
+        // position: absolute;
+        // left: 250px;
+        // top: 50px;
+        &:hover {
+            animation: jump 0.2s ease-in-out
+        }
+    }
 }
 
+@keyframes jump {
+    0% {padding-top: 15px;}
+    50% {padding-top: 0;}
+    100% {padding-top: 15px;}
+}
+
+
 .inputWrapper {
+    // border: 1px solid blue;
     width: 550px;
     background-color: #fff;
     border-radius: 40px;
-    padding: 10px;
+    padding: 12px;
 }
 
 .inputBox {
@@ -54,7 +99,7 @@ a {
     border: 0;
     font: {
         family: 'Noto Serif KR', serif;
-        size: 30px;
+        size: 28px;
     };
 }
 
@@ -64,6 +109,7 @@ a {
     align-items: center;
     // background-color: lightyellow;
     // background-image: url('http://7-themes.com/data_images/out/26/6857918-paper-background.jpg');
+    // z-index: 0;
 }
 
 .contentWrapper {
@@ -78,8 +124,8 @@ a {
 
 .setting {
     align-self: flex-end;
-    padding: 20px 0;
-    margin-bottom: 20px;
+    padding: 20px 0 0 0;
+    // margin-bottom: 20px;
     span {
         font-size: 13px;
     }
@@ -101,7 +147,13 @@ a {
 }
 
 .resultsWrapper {
-    display: flex;
+    display: flex; 
+    .summary {
+        // background-color: yellow;
+        width: 100%;
+        text-align: center;
+        padding: 40px;
+    }
     &-list {
         flex-direction: column;
         align-items: center;
@@ -124,7 +176,7 @@ a {
     &-card {
         flex-direction: column;
         flex-basis: 250px;
-        margin-bottom: 20px;
+        margin-top: 40px;
     }
     &-innerWrapper {
         &-list {
@@ -141,12 +193,14 @@ a {
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            box-shadow: 2px 3px 10px rgba(0, 0, 0, .5);
             &:hover .info-card {
                 transform: translateY(-100%);
             }
             img {
                 width: 170px;
                 display: block;
+
             }
         }
     }
@@ -186,13 +240,38 @@ a {
     display: none;
 }
 
+.invisible-effect {
+    opacity: 0;
+}
+
 .loadMore {
-    padding: 30px 0;
+    padding: 70px 0;
     div {
         text-align: center;
     }
+    .underline:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
 }
+
 
 .invisible {
     display: none;
 }
+
+.mt {
+    margin-top: 43px;
+}
+
+// .modal {
+//     width: 100%;
+//     height: 100%;
+//     position: fixed;
+//     // overflow: auto;
+//     background-color: rgba(0,0,0,0.4);
+//     z-index: 10;
+//     left: 0;
+//     top: 0;
+//     overflow: auto;
+// }
