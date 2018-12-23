@@ -4,7 +4,8 @@ import appTemplate from 'app.ejs';
 import searchboxTemplate from 'searchbox.ejs';
 import settingTemplate from 'setting.ejs';
 import resultsTemplate from 'results.ejs';
-import loadMoreTemplate from 'loadMore.ejs';
+// import loadMoreTemplate from 'loadMore.ejs';
+import arrowTemplate from 'arrow.ejs';
 
 import Gorilla from '../Gorilla';
 
@@ -20,6 +21,9 @@ let sortby;
 let resultsWrapper;
 let result;
 let naverLink;
+let returnToTopArrow;
+let keywordAlert;
+let exceedAlert;
 let loadmore;
 
 let type = 'list';
@@ -27,6 +31,8 @@ let sortbySim = true;
 let isRequesting = false;
 
 const searchbox = new Gorilla.Component(searchboxTemplate);
+
+
 
 searchbox.search = function(e) {
 	if (e.keyCode === 13) {
@@ -36,7 +42,9 @@ searchbox.search = function(e) {
 		requestCount = 0;
 		bookInfo = [];
 		bookdata = {};
-		keyword ? requestInfo(keyword) : console.error('1글자 이상 입력하세요');
+		keyword ? requestInfo(keyword) : keywordAlert.classList.remove('invisible-effect');
+	} else {
+		keywordAlert.classList.add('invisible-effect');
 	}
 }
 
@@ -72,6 +80,9 @@ function requestInfo(keyword, start = 1, sort = 'sim', display = 20) {
 				} else {
 					showResult(bookInfo);
 				}
+			},
+			error: function(error) {
+				console.log(error);
 			}
 		});	
 	}
@@ -90,18 +101,22 @@ function requestURL(bookInfo, index, link) {
 			if (count === bookdata.display) {
 				showResult(bookInfo);
 			}
+		},
+		error: function(error2) {
+			console.log(error2);
 		}
 		
 	});
 }
+
 
 function showResult(bookInfo) {
 	isRequesting = false;
 	results.keyword = keyword;
 	results.bookInfo = bookInfo;
 	results.bookdata = bookdata;
-	loadMore.bookInfo = bookInfo;
-	loadMore.bookdata = bookdata;
+	// loadMore.bookInfo = bookInfo;
+	// loadMore.bookdata = bookdata;
 
 	requestCount++;
 	console.log('requestCount', requestCount);
@@ -112,20 +127,23 @@ function showResult(bookInfo) {
 	resultsWrapper = document.querySelector('.resultsWrapper');
 	result = document.querySelectorAll('.result');
 	naverLink = document.querySelector('.naverLink');
-	loadmore = document.querySelector('.loadMore');
+	// loadmore = document.querySelector('.loadMore');
+	returnToTopArrow = document.querySelector('.arrow');
+	exceedAlert = document.querySelector('.exceedAlert');
 	
 	content.classList.remove('invisible');
 	header.classList.remove('header-big');
 	header.classList.add('header-small');
 	header.children[0].classList.remove('invisible');
 	header.children[1].classList.add('invisible');
-	loadmore.classList.remove('invisible');
+	// loadmore.classList.remove('invisible');
 	sortby.classList.remove('invisible');
 	resultsWrapper.children[0].classList.remove('mt');
+	exceedAlert.classList.add('invisible');
 
 	if (!bookInfo.length) {
 		console.log('검색결과가 없습니다');
-		loadmore.classList.add('invisible');
+		// loadmore.classList.add('invisible');
 		sortby.classList.add('invisible');
 		resultsWrapper.children[0].classList.add('mt');
 	} else {
@@ -136,6 +154,16 @@ function showResult(bookInfo) {
 		}
 	}
 	
+}
+
+const arrow = new Gorilla.Component(arrowTemplate);
+
+
+arrow.returnToTop = () => {
+	window.scroll({
+		top: 0,
+		behavior: 'smooth'
+	});
 }
 
 const setting = new Gorilla.Component(settingTemplate);
@@ -191,7 +219,8 @@ setting.sortBySales = (e) => {
 function setListType() {
 	resultsWrapper.classList.remove('resultsWrapper-card');
 	resultsWrapper.classList.add('resultsWrapper-list');
-	for (let i = 0; i < resultsWrapper.children.length; i++) {
+	for (let i = 0; i < resultsWrapper.children.length - 3; i++) {
+		// if (i > 19) debugger
 		result[i].classList.remove('result-card');
 		result[i].classList.add('result-list');
 		result[i].children[0].classList.remove('result-innerWrapper-card');
@@ -204,10 +233,10 @@ function setListType() {
 }
 
 function setCardType() {
+	// debugger
 	resultsWrapper.classList.remove('resultsWrapper-list');
 	resultsWrapper.classList.add('resultsWrapper-card');
-	for (let i = 0; i < resultsWrapper.children.length; i++) {
-		debugger
+	for (let i = 0; i < resultsWrapper.children.length - 3; i++) {
 		result[i].classList.remove('result-list');
 		result[i].classList.add('result-card');
 		result[i].children[0].classList.remove('result-innerWrapper-list');
@@ -223,46 +252,77 @@ const results = new Gorilla.Component(resultsTemplate, {
 	keyword: '',
 	bookInfo: [],
 	bookdata: []
-});
+}, {arrow});
 
-results.MoveToNaverBook = function(e) {
-	if (type !== 'list') {
+results.MoveToNaverBook = function() {
+	if (type === 'card') {
 		window.open(naverLink.href, '_blank');
 	}
 }
 
-const loadMore = new Gorilla.Component(loadMoreTemplate, {
-	bookInfo: [],
-	bookdata: []
-});
+// const loadMore = new Gorilla.Component(loadMoreTemplate, {
+// 	bookInfo: [],
+// 	bookdata: []
+// });
 
-loadMore.loadMoreInfo = function() {
-	console.log('load more..')
-	if (requestCount * 20 - bookdata.total < 20) {
-		requestInfo(keyword, (requestCount * 20) + 1);
+// loadMore.loadMoreInfo = function() {
+// 	console.log('load more..')
+// 	if (requestCount * 20 - bookdata.total < 20) {
+// 		requestInfo(keyword, (requestCount * 20) + 1);
+// 	} else {
+
+// 	}
+// }
+
+window.addEventListener('scroll', function() {
+	// this.console.log('w.innerHeight: '+window.innerHeight);
+	// this.console.log('w.scrollY: '+window.scrollY);
+	// this.console.log('1**innerHeight+scrollY: '+ (window.innerHeight + window.scrollY));
+	// this.console.log('2**w.b.offsetHeight: '+document.body.offsetHeight);
+	if (window.scrollY > 700) {
+		returnToTopArrow.classList.remove('invisible-effect');
 	} else {
-
+		returnToTopArrow.classList.add('invisible-effect');
 	}
-}
+
+
+	if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 2000)) {
+		if (bookdata.total - (requestCount * 20) > 0) {
+			requestInfo(keyword, (requestCount * 20) + 1);
+		} else {
+			exceedAlert.classList.remove('invisible');
+		}
+	}
+});
 
 
 const app = new Gorilla.Component(appTemplate, null, {
 	searchbox,
 	setting,
-	results,
-	loadMore
+	results
+	// ,loadMore
 });
 
 app.resetAll = function() {
 	setTimeout(function() {
 		header.classList.remove('header-small');
-	header.classList.add('header-big');
-	header.children[0].classList.add('invisible');
-	header.children[1].classList.remove('invisible');
-	content.classList.add('invisible');
+		header.classList.add('header-big');
+		header.children[0].classList.add('invisible');
+		header.children[1].classList.remove('invisible');
+		content.classList.add('invisible');
 	}, 500);
 	
 }
+
+// results.on('BEFORE_RENDER', () => console.log('results 렌더전'));
+// setting.on('BEFORE_RENDER', () => console.log('setting 렌더전'));
+
+app.on('AFTER_RENDER', () => {
+	keywordAlert = document.querySelector('.keyword-alert');
+	keywordAlert.classList.remove('invisible');
+	console.log('안보이게 처리 완료');
+});
+app.on('BEFORE_RENDER', () => console.log('app before render'));
 
 Gorilla.renderToDOM(
     app,
