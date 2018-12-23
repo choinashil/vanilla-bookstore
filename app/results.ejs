@@ -13,16 +13,16 @@
     <div class="result result-list" >
         <div class="result-innerWrapper-list" gorilla-click="MoveToNaverBook">
             <img src=<%= bookInfo[i].image %>>
-            <div>
+            <div class="info">
                 <ul>
                     <li><%= title %></li>
                     <li><%= author %></li>
                     <li><%= bookInfo[i].publisher %></li>
                     <li><%= year + '년 ' + month + '월 '+ date + '일' %></li>
                     <li class="description"><%= description %>...</li>
-                    <li><a href="<%= bookInfo[i].link %>" class="naverLink" target="_blank" title="네이버 책으로 이동">구매하기</a></li>
                 </ul>
             </div>
+            <div><a href="<%= bookInfo[i].link %>" class="naver-link" target="_blank" title="네이버 책으로 이동">구매하기</a></div>
         </div>
     </div>
     <% } %>

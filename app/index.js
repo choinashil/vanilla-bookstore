@@ -126,7 +126,7 @@ function showResult(bookInfo) {
 	sortby = document.querySelector('.setting');
 	resultsWrapper = document.querySelector('.resultsWrapper');
 	result = document.querySelectorAll('.result');
-	naverLink = document.querySelector('.naverLink');
+	naverLink = document.querySelector('.naver-link');
 	// loadmore = document.querySelector('.loadMore');
 	returnToTopArrow = document.querySelector('.arrow');
 	exceedAlert = document.querySelector('.exceedAlert');
@@ -228,8 +228,11 @@ function setListType() {
 		result[i].children[0].children[1].classList.remove('info-card');
 		result[i].children[0].children[1].children[0].children[3].classList.remove('invisible');
 		result[i].children[0].children[1].children[0].children[4].classList.remove('invisible');
-		result[i].children[0].children[1].children[0].children[5].classList.remove('invisible');
+		// result[i].children[0].children[1].children[0].children[5].classList.remove('invisible');
+		result[i].children[0].children[2].classList.remove('invisible');
 	}
+	returnToTopArrow.classList.remove('arrow-card');
+	returnToTopArrow.classList.add('arrow-list');
 }
 
 function setCardType() {
@@ -244,8 +247,12 @@ function setCardType() {
 		result[i].children[0].children[1].classList.add('info-card');
 		result[i].children[0].children[1].children[0].children[3].classList.add('invisible');
 		result[i].children[0].children[1].children[0].children[4].classList.add('invisible');
-		result[i].children[0].children[1].children[0].children[5].classList.add('invisible');
+		// result[i].children[0].children[1].children[0].children[5].classList.add('invisible');
+		result[i].children[0].children[2].classList.add('invisible');
 	}
+	returnToTopArrow.classList.remove('arrow-list');
+	returnToTopArrow.classList.add('arrow-card');
+
 }
 
 const results = new Gorilla.Component(resultsTemplate, {
@@ -320,9 +327,9 @@ app.resetAll = function() {
 app.on('AFTER_RENDER', () => {
 	keywordAlert = document.querySelector('.keyword-alert');
 	keywordAlert.classList.remove('invisible');
-	console.log('안보이게 처리 완료');
+	// console.log('안보이게 처리 완료');
 });
-app.on('BEFORE_RENDER', () => console.log('app before render'));
+// app.on('BEFORE_RENDER', () => console.log('app before render'));
 
 Gorilla.renderToDOM(
     app,
