@@ -60,7 +60,7 @@ html, body {
     100% {transform: translateY(0);}
 }
 
-.searchbox {
+.searchBox {
     height: 66px;
     .input-wrapper {
         width: 550px;
@@ -85,7 +85,6 @@ html, body {
     text-align: center;
     color: $point;
     transform: translateY(-45px);
-    transition: opacity .2s;
 }
 
 .content {
@@ -112,14 +111,6 @@ html, body {
     margin-left: 5px;
     font-size: 17px;
     color: #444;
-}
-
-.selected {
-    color: $point;
-}
-
-.pointer {
-    cursor: pointer;
 }
 
 .results-wrapper {
@@ -188,7 +179,6 @@ html, body {
             width: 170px;
             padding: 5px 10px;
             background-color: rgba(34, 34, 34, .7);
-            text-align: center;
             color: #fff;
             transition: all .5s;
         }
@@ -226,7 +216,7 @@ html, body {
     }
 }
 
-.no-more-alert {
+.no-more-data-alert {
     width: 100%;
     padding: 80px 0 100px 0;
     text-align: center;
@@ -245,24 +235,14 @@ html, body {
     }
     .arrow-wrapper {
         text-align: center;
-        .top {
-            opacity: 0;
-            font-family: 'Lobster', cursive;
-            color: $point;
-        }
         .fa-arrow {
             font-size: 40px;
             color: #aaa;
         }
-        &:hover {
-            transform: translateY(-20px);
-            transition: all .4s ease;
-        }
-        &:hover .top {
-            opacity: 1;
-        }
         &:hover .fa-arrow {
             color: $point;
+            transform: translateY(-20px);
+            transition: all .4s ease;
         }
     }
 }
@@ -270,6 +250,14 @@ html, body {
 a {
     text-decoration: none;
     color: #000;
+}
+
+.selected {
+    color: $point;
+}
+
+.pointer {
+    cursor: pointer;
 }
 
 .mt {
