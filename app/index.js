@@ -8,17 +8,8 @@ import arrowTemplate from 'arrow.ejs';
 
 import Gorilla from '../Gorilla';
 
-let header;
-let content;
-let sortBy;
-let resultsWrapper;
-let result;
-let returnToTopArrow;
-let keywordAlert;
-let noMoreDataAlert;
-
 let keyword;
-let bookdata;
+let bookData;
 let bookInfo;
 let dataRequestCount;
 let urlRequestCount;
@@ -26,22 +17,25 @@ let type = 'list';
 let sortBySim = true;
 let isRequesting = false;
 
+let result;
+let returnToTopArrow;
+let noMoreDataAlert;
+
 const searchBox = new Gorilla.Component(searchBoxTemplate);
 
 searchBox.search = (e) => {
-    keywordAlert = document.querySelector('.keyword-alert');
     if (e.keyCode === 13) {
         keyword = e.target.value;
         e.target.value = '';
         resetValues();
-        keyword ? requestData(keyword) : keywordAlert.classList.remove('invisible');
+        keyword ? requestData(keyword) : searchBox._element.children[1].classList.remove('invisible');
     } else {
-        keywordAlert.classList.add('invisible');
+        searchBox._element.children[1].classList.add('invisible');
     }
 }
 
 function resetValues() {
-    bookdata = {};
+    bookData = {};
     bookInfo = [];
     dataRequestCount = 0;
 }
@@ -52,7 +46,7 @@ function requestData(keyword, start = 1, sort = 'sim', display = 20) {
         $.ajax({
             url: `http://localhost:3000/v1/search/book/?query=${keyword}&display=${display}&start=${start}&sort=${sort}`,
             success: function(data) {
-                bookdata = data;
+                bookData = data;
                 bookInfo = bookInfo.concat(data.items);
                 urlRequestCount = 0;
 
@@ -63,7 +57,7 @@ function requestData(keyword, start = 1, sort = 'sim', display = 20) {
                                 bookInfo[i].image = 'https://bookthumb-phinf.pstatic.net/cover/106/518/10651821.jpg?udate=20160603';
                             }
                             requestURL(bookInfo, i, bookInfo[i].link);
-                        }	
+                        }
                     } else {
                         showResult(bookInfo);
                     }
@@ -71,7 +65,7 @@ function requestData(keyword, start = 1, sort = 'sim', display = 20) {
                     showResult(bookInfo);
                 }
             }
-        });	
+        });
     }
 }
 
@@ -81,7 +75,7 @@ function requestURL(bookInfo, index, link) {
         success: function(urldata) {
             urlRequestCount++;
             bookInfo[index].link = urldata.result.url;
-            if (urlRequestCount === bookdata.display) {
+            if (urlRequestCount === bookData.display) {
                 showResult(bookInfo);
             }
         }
@@ -94,17 +88,17 @@ function showResult(bookInfo) {
 
     results.keyword = keyword;
     results.bookInfo = bookInfo;
-    results.bookdata = bookdata;
+    results.bookData = bookData;
 
-    getDOMElements();
     makeHeaderSmall();
-    sortBy.classList.remove('invisible');
-    resultsWrapper.children[0].classList.remove('mt');
+    setting._element.classList.remove('invisible');
+    results._element.children[0].classList.remove('mt');
+    noMoreDataAlert = results._element.children[results._element.children.length - 2];
     noMoreDataAlert.classList.add('invisible');
 
     if (!bookInfo.length) {
-        sortBy.classList.add('invisible');
-        resultsWrapper.children[0].classList.add('mt');
+        setting._element.classList.add('invisible');
+        results._element.children[0].classList.add('mt');
     } else {
         if (type === 'list') {
             setListType();
@@ -114,22 +108,12 @@ function showResult(bookInfo) {
     }
 }
 
-function getDOMElements() {
-    header = document.querySelector('.header');
-    content = document.querySelector('.content');
-    sortBy = document.querySelector('.setting');
-    resultsWrapper = document.querySelector('.results-wrapper');
-    result = document.querySelectorAll('.result');
-    returnToTopArrow = document.querySelector('.arrow');
-    noMoreDataAlert = document.querySelector('.no-more-data-alert');
-}
-
 function makeHeaderSmall() {
-    header.classList.remove('header-big');
-    header.classList.add('header-small');
-    header.children[0].classList.remove('invisible');
-    header.children[1].classList.add('invisible');
-    content.classList.remove('invisible');
+    app._element.children[0].classList.remove('header-big');
+    app._element.children[0].classList.add('header-small');
+    app._element.children[0].children[0].classList.remove('invisible');
+    app._element.children[0].children[1].classList.add('invisible');
+    app._element.children[1].classList.remove('invisible');
 }
 
 const setting = new Gorilla.Component(settingTemplate);
@@ -176,35 +160,39 @@ setting.showCardType = (e) => {
 }
 
 function setListType() {
-    resultsWrapper.classList.remove('results-wrapper-card');
-    resultsWrapper.classList.add('results-wrapper-list');
-    for (let i = 0; i < resultsWrapper.children.length - 3; i++) {
-        result[i].classList.remove('result-card');
-        result[i].classList.add('result-list');
-        result[i].children[0].classList.remove('result-inner-wrapper-card');
-        result[i].children[0].classList.add('result-inner-wrapper-list');
-        result[i].children[0].children[1].classList.remove('info-card');
-        result[i].children[0].children[1].children[0].children[3].classList.remove('invisible');
-        result[i].children[0].children[1].children[0].children[4].classList.remove('invisible');
-        result[i].children[0].children[2].classList.remove('invisible');
+    results._element.classList.remove('results-wrapper-card');
+    results._element.classList.add('results-wrapper-list');
+    for (let i = 1; i < results._element.children.length - 2; i++) {
+        result = results._element.children[i];
+        result.classList.remove('result-card');
+        result.classList.add('result-list');
+        result.children[0].classList.remove('result-inner-wrapper-card');
+        result.children[0].classList.add('result-inner-wrapper-list');
+        result.children[0].children[1].classList.remove('info-card');
+        result.children[0].children[1].children[0].children[3].classList.remove('invisible');
+        result.children[0].children[1].children[0].children[4].classList.remove('invisible');
+        result.children[0].children[2].classList.remove('invisible');
     }
+    returnToTopArrow = results._element.children[results._element.children.length - 1];
     returnToTopArrow.classList.remove('arrow-card');
     returnToTopArrow.classList.add('arrow-list');
 }
 
 function setCardType() {
-    resultsWrapper.classList.remove('results-wrapper-list');
-    resultsWrapper.classList.add('results-wrapper-card');
-    for (let i = 0; i < resultsWrapper.children.length - 3; i++) {
-        result[i].classList.remove('result-list');
-        result[i].classList.add('result-card');
-        result[i].children[0].classList.remove('result-inner-wrapper-list');
-        result[i].children[0].classList.add('result-inner-wrapper-card');
-        result[i].children[0].children[1].classList.add('info-card');
-        result[i].children[0].children[1].children[0].children[3].classList.add('invisible');
-        result[i].children[0].children[1].children[0].children[4].classList.add('invisible');
-        result[i].children[0].children[2].classList.add('invisible');
+    results._element.classList.remove('results-wrapper-list');
+    results._element.classList.add('results-wrapper-card');
+    for (let i = 1; i < results._element.children.length - 2; i++) {
+        result = results._element.children[i];
+        result.classList.remove('result-list');
+        result.classList.add('result-card');
+        result.children[0].classList.remove('result-inner-wrapper-list');
+        result.children[0].classList.add('result-inner-wrapper-card');
+        result.children[0].children[1].classList.add('info-card');
+        result.children[0].children[1].children[0].children[3].classList.add('invisible');
+        result.children[0].children[1].children[0].children[4].classList.add('invisible');
+        result.children[0].children[2].classList.add('invisible');
     }
+    returnToTopArrow = results._element.children[results._element.children.length - 1];
     returnToTopArrow.classList.remove('arrow-list');
     returnToTopArrow.classList.add('arrow-card');
 }
@@ -226,7 +214,7 @@ window.addEventListener('scroll', function() {
     }
 
     if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 1500)) {
-        if (bookdata.total - (dataRequestCount * 20) > 0) {
+        if (bookData.total - (dataRequestCount * 20) > 0) {
             requestData(keyword, (dataRequestCount * 20) + 1);
         } else {
             noMoreDataAlert.classList.remove('invisible');
@@ -237,10 +225,11 @@ window.addEventListener('scroll', function() {
 const results = new Gorilla.Component(resultsTemplate, {
     keyword: '',
     bookInfo: [],
-    bookdata: []
+    bookData: []
 }, {
     arrow
 });
+
 
 results.MoveToNaverBook = (e) => {
     if (type === 'card') {
@@ -257,11 +246,11 @@ const app = new Gorilla.Component(appTemplate, null, {
 app.resetAll = () => setTimeout(makeHeaderBig, 500);
 
 function makeHeaderBig() {
-    header.classList.remove('header-small');
-    header.classList.add('header-big');
-    header.children[0].classList.add('invisible');
-    header.children[1].classList.remove('invisible');
-    content.classList.add('invisible');
+    app._element.children[0].classList.remove('header-small');
+    app._element.children[0].classList.add('header-big');
+    app._element.children[0].children[0].classList.add('invisible');
+    app._element.children[0].children[1].classList.remove('invisible');
+    app._element.children[1].classList.add('invisible');
 }
 
 Gorilla.renderToDOM(

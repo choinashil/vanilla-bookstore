@@ -1,7 +1,7 @@
 <div class="results-wrapper results-wrapper-list">
-    <div class="summary">'<%= keyword %>' 의 검색결과는 <%= bookdata.total %>건입니다.</div>
+    <div class="summary">'<%= keyword %>' 의 검색결과는 <%= bookData.total %>건입니다.</div>
 
-    <% for(let i = 0; i < bookInfo.length; i++) { %>
+    <% for (let i = 0; i < bookInfo.length; i++) { %>
 
     <% const image = bookInfo[i].image %>
     <% const title = bookInfo[i].title.replace(/[<b>|</b>]/g, '') %>
@@ -11,10 +11,11 @@
     <% const month = Number(bookInfo[i].pubdate.slice(4, 6)) %>
     <% const date = Number(bookInfo[i].pubdate.slice(6, 8)) %>
     <% const description = bookInfo[i].description.replace(/[<b>|</b>]/g, '').substr(0, 50) %>
+    <% const link = bookInfo[i].link %>
 
-    <div class="result result-list" >
+    <div class="result result-list">
         <div class="result-inner-wrapper-list" gorilla-click="MoveToNaverBook">
-            <img src=<%= image %>>
+            <img src="<%= image %>">
             <div class="info">
                 <ul>
                     <li><%= title %></li>
@@ -25,7 +26,7 @@
                 </ul>
             </div>
             <div>
-                <a href="<%= bookInfo[i].link %>" class="naver-link" target="_blank" title="네이버 책으로 이동">구매하기</a>
+                <a href="<%= link %>" class="naver-link" target="_blank" title="네이버 책으로 이동">구매하기</a>
             </div>
         </div>
     </div>

@@ -19,7 +19,7 @@ html, body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    transition: height .35s ease-in-out;
+    transition: height .4s ease-in;
     &-big {
         flex-direction: column;
         height: 100vh;
@@ -114,7 +114,7 @@ html, body {
 }
 
 .results-wrapper {
-    display: flex; 
+    display: flex;
     &-list {
         flex-direction: column;
         align-items: center;
@@ -209,9 +209,7 @@ html, body {
         font-size: 13px;
         &:hover {
             border: 1px solid $point;
-            background-color: $point;
-            color: #fff;
-            transition: all .4s;
+            color: $point;
         }
     }
 }
@@ -225,25 +223,23 @@ html, body {
 .arrow {
     position: fixed;
     margin-top: 400px;
+    text-align: center;
     transition: opacity .3s;
     &-list {
-        align-self: flex-end; 
+        align-self: flex-end;
         margin-left: 130px;
     }
     &-card {
         margin-left: 500px;
     }
-    .arrow-wrapper {
-        text-align: center;
-        .fa-arrow {
-            font-size: 40px;
-            color: #aaa;
-        }
-        &:hover .fa-arrow {
-            color: $point;
-            transform: translateY(-20px);
-            transition: all .4s ease;
-        }
+    .fa-arrow {
+        font-size: 40px;
+        color: #aaa;
+    }
+    &:hover .fa-arrow {
+        color: $point;
+        transform: translateY(-20px);
+        transition: all .4s ease;
     }
 }
 
